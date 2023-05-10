@@ -1,90 +1,78 @@
-import entidade
-import pygameHelpers
-import food
-
+import Helpers.PyGameHelper as PyGameHelper
+import Entities.Simulation as Simulation
+import Entities.fps as fps
+import Configuration as configuration
 import pygame
-from math import sin,cos,tan,radians, pi, sqrt
 
+simulation = Simulation.Simulation(1, 5, 300)
 
-# pygame setup
-pygame.init()
-x = 1280
-y = 720
-screen = pygame.display.set_mode((x, y))
-clock = pygame.time.Clock()
 running = True
 
+frame_second = fps.fps([20,20])
 
-# Criando Variaveis de entidades
-listEnt = []
+fps_limit = 60
 
-qntEnties = 10
-for i in range(qntEnties):
-    posX = x / 2 + cos(radians((360 / qntEnties) * i)) * 299
-    posY = y / 2 - sin(radians((360 / qntEnties) * i)) * 299
+show_render_division = True
 
-    listEnt.append(entidade.entidade(screen,posX,posY, 180 + (360 / qntEnties) * i))
-
-
-# Criando variaveis de comida
-listFood = []
-
-qntFood = 60
-for c in range(qntFood):
-    listFood.append(food.Food(screen, 300, [x/2, y/2]))
-
-
-# Ciclo do jogo
 while running:
-    # Checa a stack de eventos
-    # pygame.QUIT é o evento de clicar no X
-
+    #PyGameHelper.pause(configuration.screen)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
 
-        # Configurando pause
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
-                pygameHelpers.pause(screen)         
+                PyGameHelper.pause(configuration.screen)
 
-    # apaga o ultimo frame enxendo a tela de preto
-    screen.fill("black")
+            if event.key == pygame.K_ESCAPE:
+                running = False             # ends simulation
 
-    # Draws arena
-    pygame.draw.circle(screen,"white", [x / 2, y / 2], 300)
+            if event.key == pygame.K_RIGHT:
+                fps_limit = fps_limit * 1.5 # makes simulation faster
+
+            if event.key == pygame.K_LEFT:
+                fps_limit = fps_limit / 1.5 # makes simulation slower
+
+            if event.key == pygame.K_UP:
+                simulation.drawRender() # turns on line
+
+            if event.key == pygame.K_DOWN:
+                show_render_division = not show_render_division # turns on dev view
+
+            if event.key == pygame.K_r:
+                simulation.startRound(10,30) # restart simulation
     
+    configuration.screen.fill("black")
 
-    # Draws food
-    for com in listFood:
-        com.draw()
-
-    # Draws enties
-    for num, ent in enumerate(listEnt):
-        ent.draw()
-        if ent.calculaDistancia(x / 2, y / 2) < 300:
-            ent.randomMove()
-            
-    # Checks food coordinates    
-    for currentFood in listFood:
-        currentFood = food.Food.getPosition(currentFood)
-        
-        for currentEntity in listEnt:   # if entity touches food, the collision happens
-            entity = entidade.entidade.getCurrentPosition(currentEntity)
-            
-            distance = sqrt((entity[0] - currentFood[0])**2 + (entity[1] - currentFood[1])**2)   # sqrt((x1 - x2)^2 + (y1 - y2)^2)
-            sumRadius = entity[2] + currentFood[2]
-            
-            if distance <= sumRadius:
-                print("collion happened")
-            
-
+    simulation.drawArena()    
     
-    
-    # Trocando o buffer para aparecer oque foi desenhado
+    if show_render_division: simulation.drawCircles()
+
+    simulation.drawFoods()
+
+    simulation.tick()
+
+    if show_render_division: simulation.drawHemispheres()
+
+    simulation.drawStatistics([20,45])
+
+    frame_second.draw()
+
     pygame.display.flip()
 
-    clock.tick(60)  # Limite de FPS
-
+    configuration.clock.tick(fps_limit) # Limitador de fps
+    
+    
+    if simulation.entity_quantity == 0:
+        print("Population died, no one is left")
+        running = False
+    
+    # when simulation ends, starts a new one with more or less entities
+    elif (simulation.entity_quantity_alive == 0) or (simulation.food_quantity_present == 0):
+        simulation.addEntity()
+        entity_quantity = simulation.entity_quantity
+        food_quantity = simulation.food_quantity
+        simulation.startRound(entity_quantity, food_quantity) 
+        
 pygame.quit()
