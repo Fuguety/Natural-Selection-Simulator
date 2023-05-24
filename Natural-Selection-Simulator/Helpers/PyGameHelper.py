@@ -6,8 +6,8 @@ def pause(window):
     first_rectangle = pygame.Rect(1100,50,40,150)
     second_rectangle = pygame.Rect(1180,50,40,150)
 
-    pygame.draw.rect(window, "white", first_rectangle)
-    pygame.draw.rect(window, "white", second_rectangle)
+    pygame.draw.rect(window, "black", first_rectangle)
+    pygame.draw.rect(window, "black", second_rectangle)
 
     pygame.display.flip()
 

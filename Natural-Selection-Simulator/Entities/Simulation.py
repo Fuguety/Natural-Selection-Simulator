@@ -1,119 +1,128 @@
 import Entities.EntityHerbivor as Entity
-#import Entities.Entity as Entity
+import Entities.EntityCarnivor as EntityCarnivor
 import Entities.Food as Food
 import pygame
 import Configuration as configuration
-from math import cos,sin,radians,floor,sqrt
+from math import cos,sin,radians,floor,sqrt,ceil
+import numpy as np
 
 class Simulation:
     
-    def __init__(self, entity_quantity, food_quantity, arena_radius):
+    def __init__(self, entity_quantity_herbivor, entity_quantity_carnivor, food_quantity, arena_radius):
         
-        self.global_food = [ [[], [], [], [], []]  , [[], [], [], [], []],   [[], [], [], [], []] , [[], [], [], [], []] ]
+        self.global_food = [[[] for row in range(20)] for column in range(ceil(configuration.y / (configuration.x / 20)))]
         self.arena_radius = arena_radius
-        self.entity_list = []
+        self.entity_list_herbivor = []  
+        self.entity_list_carnivor = [] 
         self.food_list = []
         self.food_quantity = food_quantity
-        self.entity_quantity = entity_quantity
+        self.entity_quantity_herbivor = entity_quantity_herbivor
+        self.entity_quantity_carnivor = entity_quantity_carnivor
         self.food_quantity_present = food_quantity
-        self.entity_quantity_alive = entity_quantity
+        self.entity_quantity_alive = entity_quantity_herbivor + entity_quantity_carnivor
         self.show_render = False
 
-        self.startRound(entity_quantity,food_quantity)
+        self.startRound(entity_quantity_herbivor, entity_quantity_carnivor, food_quantity)
 
-    def startRound(self, entity_quantity, food_quantity, restart = True):
+    def startRound(self, entity_quantity_herbivor, entity_quantity_carnivor,food_quantity, restart = True):
         if restart:
-            self.global_food = [ [[], [], [], [], []]  , [[], [], [], [], []],   [[], [], [], [], []] , [[], [], [], [], []] ]
-            self.entity_list = []
+            self.global_food = [[[] for row in range(20)] for column in range(ceil(configuration.y / (configuration.x / 20)))]
+            self.entity_list_herbivor = []
+            self.entity_list_carnivor = []    
             self.food_list = []
             self.food_quantity = food_quantity
-            self.entity_quantity = entity_quantity
+            self.entity_quantity = entity_quantity_herbivor + entity_quantity_carnivor
+            self.entity_quantity_herbivor_alive = entity_quantity_herbivor
+            self.entity_quantity_carnivor_alive = entity_quantity_carnivor
             self.food_quantity_present = food_quantity
-            self.entity_quantity_alive = entity_quantity
+            self.entity_quantity_alive = entity_quantity_herbivor + entity_quantity_carnivor
 
+        for i in range(1, entity_quantity_herbivor + 1):
+            position_x = i * (configuration.x / (entity_quantity_herbivor + 2))
+            self.entity_list_herbivor.append(Entity.EntityHerbivor(position_x, configuration.y - 5, 90, 1, 1))
 
-        for i in range(entity_quantity):
-            position_x = configuration.x / 2 + cos(radians((360 / entity_quantity) * i)) * (self.arena_radius - 2)
-            position_y = configuration.y / 2 - sin(radians((360 / entity_quantity) * i)) * (self.arena_radius - 2)
+        for i in range(1, entity_quantity_carnivor + 1):
+            position_x = i * (configuration.x / (entity_quantity_herbivor + 2))
+            self.entity_list_carnivor.append(EntityCarnivor.EntityCarnivor(position_x, configuration.y - 10, 90, 1, 1))
 
-            self.entity_list.append(Entity.EntityHerbivor(configuration.screen, position_x,position_y, 180 + (360 / entity_quantity) * i, 1, 10))
+        for _ in range(food_quantity):
+            food_x = np.random.randint(50,configuration.x - 50)
+            food_y = np.random.randint(50, configuration.y - 50)
 
-        for c in range(food_quantity):
-            self.food_list.append(Food.Food(configuration.screen, self.arena_radius, [configuration.screen.get_size()[0] / 2, configuration.screen.get_size()[1] / 2], "orange"))
+            food = Food.Food([food_x, food_y], "orange")
 
-        for food_for in self.food_list:
-            food_x = food_for.getPosition()[0]
-            food_y = food_for.getPosition()[1]
-            center_distance = sqrt((food_x - (configuration.x / 2)) ** 2 + (food_y - (configuration.y / 2)) ** 2)
-            food_circle = floor( center_distance / 60)
+            self.global_food[floor(food_y / (configuration.x / 20))][floor(food_x / (configuration.x / 20))].append(food)
 
-
-            if food_x > configuration.x / 2:
-                if food_y < configuration.y / 2:
-                    self.global_food[0][food_circle].append(food_for)
-                if food_y > configuration.y / 2:
-                    self.global_food[3][food_circle].append(food_for)
-
-            if food_x < configuration.x / 2:
-                if food_y < configuration.y / 2:
-                    self.global_food[1][food_circle].append(food_for)
-                if food_y > configuration.y / 2:
-                    self.global_food[2][food_circle].append(food_for)
-        
-        
-
-        self.drawArena()
         self.drawFoods()
         self.drawEntities()
 
         pygame.display.flip()
 
-    def drawArena(self):
-        pygame.draw.circle(configuration.screen, "white", [configuration.x / 2, configuration.y / 2], self.arena_radius)
-
     def drawFoods(self):
-        for food in self.food_list:
-            if not food.devoured:
-                food.draw()
+        for column in self.global_food:
+            for row in column:
+                for food in row:
+                    if not food.devoured:
+                        food.draw()
             
     def drawEntities(self):
-        for entity in self.entity_list:
-            entity.draw()
+        for entity in self.entity_list_herbivor:
+            entity.drawHerbivor()        
+        for entity in self.entity_list_carnivor:
+            entity.drawCarnivor()
 
     def drawHemispheres(self):
-        pygame.draw.line(configuration.screen, "red", [0, configuration.y / 2], [configuration.x, configuration.y / 2])
-        pygame.draw.line(configuration.screen, "red", [configuration.x / 2, 0], [configuration.x / 2, configuration.y])
-
-    def drawCircles(self):
-        for i in range(5, 0, -1):
-            color = 255 - (255 / 6) * i
-            radius = (self.arena_radius / 5) * i
-            pygame.draw.circle(configuration.screen, [color, color, color], [configuration.x / 2, configuration.y / 2], radius)
-
+        x = 20
+        block_size = configuration.x / x
+        for row in range(x):
+           #esquerda para direita
+            pygame.draw.line(configuration.screen, "black", [0, row * block_size], [configuration.x, row * block_size])
+           
+           #cima para baixo
+            pygame.draw.line(configuration.screen, "black", [row * block_size,0], [row * block_size, configuration.y])
+    
     def tick(self, collision = True):
-        for entity in self.entity_list:
-            entity.draw()
+        for entity in self.entity_list_herbivor:
+            entity.drawHerbivor()
 
-            temp = self.getArea(entity)
-            quadrant = temp[0]
-            area = temp[1]
-                
-            possible_foods = self.global_food[quadrant][area]
-            
             if entity.alive:
-                if entity.distanceBetween(configuration.x / 2, configuration.y / 2) < self.arena_radius - 1:
-                    entity.move(possible_foods)
+                
+                position = entity.getPosition()
+    
+                if (2 < position[0] < configuration.x) and (0 < position[1] < configuration.y) :
+                    temp = self.getMatrixPosition(entity)
+                    entity.move(self.global_food[temp[0]][temp[1]])
                     if collision:
-                        self.collision(entity, quadrant, area)                
+                        self.collision(entity, temp[0], temp[1])                
+                else:
+                    entity.alive = False
+                    self.entity_quantity_alive -= 1        
+        
+        for entity in self.entity_list_carnivor:
+            entity.drawCarnivor()
+
+            if entity.alive:
+                
+                position = entity.getPosition()
+    
+                if (2 < position[0] < configuration.x) and (0 < position[1] < configuration.y) :
+                    temp = self.getMatrixPosition(entity)
+                    entity.move(self.global_food[temp[0]][temp[1]])
+                    if collision:
+                        self.collision(entity, temp[0], temp[1])                
                 else:
                     entity.alive = False
                     self.entity_quantity_alive -= 1
 
-    def collision(self, entity, quadrant, area):
+
+
+        
+
+    def collision(self, entity, column, row):
         ent_x = entity.getPosition()[0]
         ent_y = entity.getPosition()[1]
         
-        for index, food_for in enumerate(self.global_food[quadrant][area]):
+        for index, food_for in enumerate(self.global_food[column][row]):
             if not food_for.devoured:
                 food_x = food_for.position_x
                 food_y = food_for.position_y
@@ -123,14 +132,15 @@ class Simulation:
                     food_for.devoured = True
                     self.food_quantity_present -= 1
                     entity.food_eaten += 1 # when food is eaten, it adds to invetory
-                    del self.global_food[quadrant][area][index]
+                    del self.global_food[column][row][index]
+                
                 if self.show_render:
                     pygame.draw.line(configuration.screen, "blue", [ent_x, ent_y], [food_x, food_y])
 
     def drawStatistics(self, position):        
         font = pygame.font.SysFont("Verdana", 20)
-        text_entities = font.render(f'entidades vivas: {str(self.entity_quantity_alive)}',True, "white")
-        text_food = font.render(f'comidas presentes: {str(self.food_quantity_present)}',True, "white")
+        text_entities = font.render(f'entidades vivas: {str(self.entity_quantity_alive)}',True, "black")
+        text_food = font.render(f'comidas presentes: {str(self.food_quantity_present)}',True, "black")
 
         configuration.screen.blit(text_entities, position)
         configuration.screen.blit(text_food, [position[0], position[1] + 25])
@@ -140,32 +150,26 @@ class Simulation:
     
     # at end of simluation define who reproduces, survive or die    
     def addEntity(self):
-        for entityEat in self.entity_list:
+        for entityEat in self.entity_list_herbivor:
             if entityEat.food_eaten >= 2: # reproduce
                 entityEat.food_eaten = 0 # resets invetory to 0
-                self.entity_quantity += 1
+                self.entity_quantity_herbivor_alive += 1
             elif entityEat.food_eaten == 1: # survives
                 entityEat.food_eaten = 0
             else:                           # dies
-                self.entity_quantity -= 1
-    
-    def getArea(self, entity):
-        center_distance = sqrt((entity.position_x - (configuration.x / 2)) ** 2 + (entity.position_y - (configuration.y / 2)) ** 2)
-        entity.circle = floor( center_distance / 60)
-        quadrant = 0
-        area = entity.circle
-
-        if entity.position_x > configuration.x / 2:
-            if entity.position_y < configuration.y / 2:
-                quadrant = 0
-            if entity.position_y > configuration.y / 2:
-                quadrant = 3
-
-        if entity.position_x < configuration.x / 2:
-            if entity.position_y < configuration.y / 2:
-                quadrant = 1
-            if entity.position_y > configuration.y / 2:
-                quadrant = 2
+                self.entity_quantity_herbivor_alive -= 1
         
-        return [quadrant, area]
+        for entityEat in self.entity_list_carnivor:
+            if entityEat.food_eaten >= 2: # reproduce
+                entityEat.food_eaten = 0 # resets invetory to 0
+                self.entity_quantity_carnivor_alive += 1
+            elif entityEat.food_eaten == 1: # survives
+                entityEat.food_eaten = 0
+            else:                           # dies
+                self.entity_quantity_carnivor_alive -= 1
+    
+    def getMatrixPosition(self, entity):
+        ent_position = entity.getPosition()
+        return [floor(ent_position[1] / (configuration.x / 20)), floor(ent_position[0] / (configuration.x / 20))]
+
                 
