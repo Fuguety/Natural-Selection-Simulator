@@ -1,0 +1,30 @@
+[
+     {
+          "Time": 5,
+          "Herbivor_quantity": 10,
+          "Carnivor_Quantity": 10,
+          "Food_Quantity": 207,
+          "Herbivor/Carnivor-Ratio": 1.0
+     },
+     {
+          "Time": 10,
+          "Herbivor_quantity": 10,
+          "Carnivor_Quantity": 10,
+          "Food_Quantity": 231,
+          "Herbivor/Carnivor-Ratio": 1.0
+     },
+     {
+          "Time": 15,
+          "Herbivor_quantity": 10,
+          "Carnivor_Quantity": 10,
+          "Food_Quantity": 249,
+          "Herbivor/Carnivor-Ratio": 1.0
+     },
+     {
+          "Time": 20,
+          "Herbivor_quantity": 10,
+          "Carnivor_Quantity": 10,
+          "Food_Quantity": 267,
+          "Herbivor/Carnivor-Ratio": 1.0
+     }
+]
