@@ -75,6 +75,8 @@ else:
 simulation_time = 0
 time_limit = 60
 
+background_render = pygame.image.load("image.jpeg")
+
 
 while running:
     #PyGameHelper.pause(configuration.screen) 
@@ -109,7 +111,8 @@ while running:
                 if event.key == pygame.K_c:
                     simulation.createHerb([configuration.x / 2, configuration.y / 2]) 
         
-        configuration.screen.fill("WHITE")
+        configuration.screen.fill("BLACK")
+        configuration.screen.blit(background_render, (0, 0))
 
 
     #time.sleep(5)
