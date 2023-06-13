@@ -101,10 +101,10 @@ class Simulation:
         block_size = configuration.x / x
         for row in range(x):
            #esquerda para direita
-            pygame.draw.line(configuration.screen, "black", [0, row * block_size], [configuration.x, row * block_size])
+            pygame.draw.line(configuration.screen, "white", [0, row * block_size], [configuration.x, row * block_size])
            
            #cima para baixo
-            pygame.draw.line(configuration.screen, "black", [row * block_size,0], [row * block_size, configuration.y])
+            pygame.draw.line(configuration.screen, "white", [row * block_size,0], [row * block_size, configuration.y])
     
     def tick(self):
         if self.show_simulation:
@@ -179,8 +179,8 @@ class Simulation:
 
     def drawStatistics(self, position):
         font = pygame.font.SysFont("Verdana", 20)
-        text_entities = font.render(f'entidades vivas: {str(self.entity_quantity_alive)}',True, "black")
-        text_food = font.render(f'comidas presentes: {str(self.food_quantity_present)}',True, "black")
+        text_entities = font.render(f'entidades vivas: {str(self.entity_quantity_alive)}',True, "white")
+        text_food = font.render(f'comidas presentes: {str(self.food_quantity_present)}',True, "white")
 
         configuration.screen.blit(text_entities, position)
         configuration.screen.blit(text_food, [position[0], position[1] + 25])
