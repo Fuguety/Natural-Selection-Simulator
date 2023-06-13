@@ -1,5 +1,7 @@
 import pygame
 
+
+
 pygame.init()
 x = 1280
 y = 720

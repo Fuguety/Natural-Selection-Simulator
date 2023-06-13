@@ -12,7 +12,7 @@ class EntityCarnivor(Entity.Entity):
         super().__init__(position_x, position_y, vision_angle)
 
         self.type = "carnivor"
-        self.speed = 2
+        self.speed = 2.2
         self.tier = tier
         self.color = "red"
         self.food_type = "herbivor"
@@ -21,8 +21,6 @@ class EntityCarnivor(Entity.Entity):
     def drawCarnivor(self):
         pygame.draw.circle(self.screen, self.color, self.getPosition(), self.radius)
         pygame.draw.line(self.screen, self.color, self.getPosition(), self.frontLine(), 2)
-
-    
 
     
     

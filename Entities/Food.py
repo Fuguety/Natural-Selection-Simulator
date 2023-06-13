@@ -4,7 +4,6 @@ import Entities.Entity as entity
 import Configuration as configuration
 from math import cos, sin, sqrt
 
-
 class Food:
     
     def __init__(self, initial_position, color):
