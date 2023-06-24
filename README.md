@@ -15,7 +15,7 @@ Please note that when it starts, there will be a option to choose between visual
 
 2 - non visual
 
-*All data will be stored in a json file within the data folder*
+*All data will be stored in a json file within the Helpers/Data/ folder*
 
 language used:
 
