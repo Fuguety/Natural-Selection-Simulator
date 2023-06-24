@@ -3,9 +3,19 @@
 
 **About**
 
-This simulator, simulates (no oun intended lol) a enviroment between herbivores, carnivores, and plants. With the goal of finding
+This simulator, simulates (no pun intended lol) a enviroment between herbivores, carnivores, and plants. With the goal of finding
 a balance between them.
 
+- how to use
+  
+Clone repository and run "main.py"
+Please note that when it starts, there will be a option to choose between visual or non-visual.
+
+1 -for visual
+
+2 - non visual
+
+*All data will be stored in a json file within the data folder*
 
 language used:
 
