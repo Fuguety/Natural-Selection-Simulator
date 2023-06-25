@@ -17,9 +17,28 @@ Please note that when it starts, there will be a option to choose between visual
 
 *All data will be stored in a json file within the Helpers/Data/ folder*
 
-Language used:
+<h3>Controls</h3>
+
+Space - Pause simulation <br>
+Arrow Key Right - speeds up simulation <br>
+Arrow Key Left - slows down simulation <br>
+Arrow Key Up - divides arena in squares (dev view) <br>
+Arrow Key Down - show pathing to food (dev view) <br>
+R - restart simulation <br>
+C - spawns herbivore 
+
+<br>
+
+<h3>Language used:</h3>
+
 
 ![Python](https://img.shields.io/badge/python-3670A0?style=for-the-badge&logo=python&logoColor=ffdd54)
+
+<h3>Runs on:</h3>
+
+![Windows](https://img.shields.io/badge/Windows-0078D6?style=for-the-badge&logo=windows&logoColor=white)
+![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
+![MAC](https://img.shields.io/badge/mac%20os-000000?style=for-the-badge&logo=apple&logoColor=white)
 
 <br><br>
 - Authors: Lucas Azevedo, Fábio Júnior and 	Gabriel Sá
